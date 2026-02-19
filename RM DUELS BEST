@@ -1900,3 +1900,32 @@ Player.CharacterAdded:Connect(function()
     if Enabled.Unwalk then startUnwalk() end
 end)
 local toggleKey = Enum.KeyCode.T local guiOpen = true UserInputService.InputBegan:Connect(function(input, gpe) if gpe then return end if input.KeyCode == toggleKey then guiOpen = not guiOpen main.Visible = guiOpen progressHolder.Visible = true end end)
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+local function highlightCharacter(character)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(0, 255, 0)
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.Parent = character
+    end
+end
+
+local function onPlayerAdded(player)
+    if player ~= localPlayer then
+        player.CharacterAdded:Connect(function(char)
+            highlightCharacter(char)
+        end)
+        if player.Character then
+            highlightCharacter(player.Character)
+        end
+    end
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+
